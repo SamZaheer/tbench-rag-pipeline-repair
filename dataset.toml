@@ -1,0 +1,3 @@
+schema_version = "1.0"
+[[tasks]]
+path = "tasks/rag-pipeline-repair"
