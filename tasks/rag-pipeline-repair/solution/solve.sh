@@ -5,6 +5,7 @@ cat << 'EOF' > /app/retrieval/retrieval.py
 """
 Hybrid Retrieval Engine combining BM25 and Dense TF-IDF Cosine Similarity with RRF.
 """
+from __future__ import annotations
 
 import math
 import re

@@ -66,3 +66,5 @@ When you believe you have fixed all bugs, run the evaluation:
 ```bash
 cd /app && python -m pytest tests/ -v
 ```
+
+You have 1800 seconds to complete this task. Do not cheat by using online solutions or hints specific to this task.

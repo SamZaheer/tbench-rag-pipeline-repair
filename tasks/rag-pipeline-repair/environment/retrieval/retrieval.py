@@ -1,6 +1,7 @@
 """
 Hybrid Retrieval Engine combining BM25 and Dense TF-IDF Cosine Similarity with RRF.
 """
+from __future__ import annotations
 
 import math
 import re
@@ -41,7 +42,6 @@ class HybridRetriever:
         self.doc_tokens = [self._tokenize(doc) for doc in documents]
         self.doc_lengths = [len(tokens) for tokens in self.doc_tokens]
 
-        # BUG 1: Off-by-one error in avgdl calculation (divides by N + 1 instead of N)
         total_len = sum(self.doc_lengths)
         self.avgdl = total_len / (self.N + 1) if self.N > 0 else 0.0
 
@@ -75,11 +75,9 @@ class HybridRetriever:
         # Update avgdl
         self.avgdl = sum(self.doc_lengths) / self.N if self.N > 0 else 0.0
 
-        # BUG 3: Forgets to update self.doc_freqs and self.vocab for new documents!
         for tokens in new_tokens_list:
             tf = Counter(tokens)
             self.term_freqs.append(tf)
-            # MISSING: updating doc_freqs and vocab!
 
         # Re-build dense vectors for all docs with updated collection state
         self._build_dense_vectors()
@@ -99,7 +97,6 @@ class HybridRetriever:
                 tf_val = 1.0 + math.log(count) if count > 0 else 0.0
                 vec[term] = tf_val * idf
 
-            # BUG 4: Incorrect L2 norm calculation (missing v**2 inside sqrt)
             norm = math.sqrt(sum(v for v in vec.values())) if vec else 0.0
             if norm > 0:
                 vec = {term: val / norm for term, val in vec.items()}
@@ -122,7 +119,6 @@ class HybridRetriever:
             denom = tf + self.k1 * (
                 1.0 - self.b + self.b * (doc_len / self.avgdl)
             )
-            # BUG 2: BM25 TF numerator is tf * k1 instead of tf * (k1 + 1)
             score += idf * (tf * self.k1) / denom
 
         return score
@@ -163,7 +159,6 @@ class HybridRetriever:
         # Filtering logic
         eligible_indices = []
         if allow_terms:
-            # BUG 6: Checks all(term in token_set) instead of any(...)
             allow_set = set(t.lower() for t in allow_terms)
             for idx, tokens in enumerate(self.doc_tokens):
                 token_set = set(tokens)
@@ -195,12 +190,11 @@ class HybridRetriever:
 
         rrf_scores = defaultdict(float)
 
-        # BUG 5: Uses 0-indexed rank instead of 1-indexed rank in RRF formula
-        for rank_0, idx in enumerate(bm25_ranked):
-            rrf_scores[idx] += 1.0 / (self.rrf_k + rank_0)
+        for rank, idx in enumerate(bm25_ranked):
+            rrf_scores[idx] += 1.0 / (self.rrf_k + rank)
 
-        for rank_0, idx in enumerate(dense_ranked):
-            rrf_scores[idx] += 1.0 / (self.rrf_k + rank_0)
+        for rank, idx in enumerate(dense_ranked):
+            rrf_scores[idx] += 1.0 / (self.rrf_k + rank)
 
         # Sort by RRF score descending
         final_ranked = sorted(
