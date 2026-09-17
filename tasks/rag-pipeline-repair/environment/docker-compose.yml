@@ -1,0 +1,10 @@
+services:
+  rag-pipeline-repair:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag-pipeline-repair
+    volumes:
+      - ./retrieval:/app/retrieval
+      - ./tests:/app/tests
+    command: python -m pytest tests/ -v

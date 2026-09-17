@@ -1,0 +1,9 @@
+services:
+  rag-pipeline-repair:
+    build:
+      context: ./tasks/rag-pipeline-repair/environment
+      dockerfile: Dockerfile
+    container_name: rag-pipeline-repair-eval
+    environment:
+      - PYTHONPATH=/app
+    command: python -m pytest tests/ -v

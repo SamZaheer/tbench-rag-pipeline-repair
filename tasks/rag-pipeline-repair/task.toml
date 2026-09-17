@@ -1,0 +1,20 @@
+schema_version = "1.4"
+
+[task]
+name = "samzaheer/rag-pipeline-repair"
+version = "1.0.0"
+authors = ["samzaheer"]
+keywords = ["debugging", "information-retrieval", "algorithms", "python"]
+
+[metadata]
+author_name = "Sam Zaheer"
+author_email = "samzaheer@example.com"
+difficulty = "hard"
+category = "software-engineering"
+tags = ["debugging", "information-retrieval", "data-engineering", "algorithms"]
+
+[verifier]
+timeout_sec = 180.0
+
+[agent]
+timeout_sec = 1800.0
