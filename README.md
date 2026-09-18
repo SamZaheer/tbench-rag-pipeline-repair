@@ -2,15 +2,15 @@
 
 **Author:** Sam Zaheer (`samzaheer`)  
 **Task Name:** `samzaheer/rag-pipeline-repair`  
-**Framework Version:** Terminal-Bench 3 / Harbor (Schema 1.4)  
+**Framework Version:** Terminal-Bench 3 / Harbor (Schema 1.0)  
 **Category:** Software Engineering / Search & Information Retrieval / Algorithmic Debugging  
-**Difficulty:** Hard  
+**Difficulty:** Hard (intended; see [trial results](TRIAL_RESULTS.md): not yet met)  
 
 ---
 
 ## 1. Executive Summary
 
-This repository contains an original, submission-ready **Terminal-Bench 3** task designed for the Klavis AI Founding Engineer hiring evaluation.
+This repository contains an original **Terminal-Bench 3** task designed for the Klavis AI Founding Engineer hiring evaluation.
 
 The task evaluates an AI agent's ability to diagnose, isolate, and repair a multi-bug algorithmic Python service: a **Hybrid Document Retrieval Engine** combining **BM25 sparse retrieval**, **TF-IDF dense vector retrieval (cosine similarity)**, and **Reciprocal Rank Fusion (RRF)**.
 
@@ -23,6 +23,8 @@ The task includes **6 distinct, non-trivial bugs** spanning mathematical formula
 ```
 .
 ├── README.md                                 # Evaluation submission documentation
+├── TRIAL_RESULTS.md                          # Per-trial agent results & failure analysis
+├── trial-results/                            # Raw Harbor job outputs (tokens redacted)
 └── tasks/
     └── rag-pipeline-repair/                  # Harbor Task Directory
         ├── task.toml                         # Task configuration (schema_version = "1.4")
@@ -78,48 +80,58 @@ The agent is given `/app/retrieval/retrieval.py` and must fix all bugs while str
 ## 4. Automated Verification Checks
 
 ### A. Static & Schema Validation
-- Schema version: `1.4` (Valid)
-- Required directory structure: `environment/`, `solution/`, `tests/`, `instruction.md`, `task.toml` (Valid)
+- Schema version: `1.0` (as declared in `task.toml`)
+- Required directory structure: `environment/`, `solution/`, `tests/`, `instruction.md`, `task.toml` (present)
 
 ### B. NOP (No-Op) Validation
-- **Command**: `pytest environment/tests/test_retrieval.py` on unmodified environment
-- **Result**: **FAIL** (Exit Code `1`, 0/6 tests passed). Confirms zero false positives.
+- **Command**: `harbor run -p tasks/rag-pipeline-repair --agent nop --env docker --yes`
+- **Result**: reward **0.0** (job `2026-09-18__04-21-30`). The unmodified environment fails the verifier.
 
 ### C. Oracle Validation
-- **Command**: Apply `solution/solve.sh` and run `pytest environment/tests/test_retrieval.py`
-- **Result**: **PASS** (Exit Code `0`, 6/6 tests passed in 0.04s). Confirms task solvability.
+- **Command**: `harbor run -p tasks/rag-pipeline-repair --agent oracle --env docker --yes`
+- **Result**: reward **1.0** (job `2026-09-18__04-21-21`). `solution/solve.sh` makes all 6 tests pass.
 
 ---
 
 ## 5. Agent Trials & Evaluation Results
 
-### A. Standard Agent Trials (`/run`)
-Target: 3 trials per model; all 3 trials must fail to pass the verifier.
+All trials were run on 2026-09-18 with Harbor 0.23.0. Per-trial details (timings, files modified, exceptions) are in **[TRIAL_RESULTS.md](TRIAL_RESULTS.md)**, and the raw Harbor outputs are in [`trial-results/`](trial-results/).
 
-| Agent | Model | Reasoning Effort | Trial 1 | Trial 2 | Trial 3 | Pass Rate | Result |
+### A. Standard Agent Trials (`/run`)
+Target: 3 trials per configuration; all 3 must genuinely fail the verifier.
+
+| Agent | Model | Reasoning Effort | Trial 1 | Trial 2 | Trial 3 | Pass Rate | Job |
 |---|---|---|---|---|---|---|---|
-| Codex | `openai/gpt-5.6-sol` | `xhigh` | ❌ FAIL | ❌ FAIL | ❌ FAIL | 0.0% | Genuinely Failed (Task Hardness Met) |
-| Claude Code | `anthropic/claude-opus-5` | `max` | ❌ FAIL | ❌ FAIL | ❌ FAIL | 0.0% | Genuinely Failed (Task Hardness Met) |
+| Claude Code | `anthropic/claude-opus-5` | `max` | ✅ 1.0 | ✅ 1.0 | ✅ 1.0 | 100% | `2026-09-18__04-39-29` |
+| Codex | `openai/gpt-5.6-sol` | `xhigh` | ⚠️ error | ⚠️ error | ⚠️ error | not scored | `2026-09-18__04-31-17` |
+| Codex *(substitute)* | `openai/gpt-5.6-terra` | `xhigh` | ✅ 1.0 | ✅ 1.0 | ✅ 1.0 | 100% | `2026-09-18__04-54-25` |
+
+The `gpt-5.6-sol` trials are infrastructure failures, not model results. The available Codex credential was a ChatGPT-account login, which the OpenAI API rejects for this model (`400: The 'gpt-5.6-sol' model is not supported when using Codex with a ChatGPT account`). Two trials also hit agent-setup timeouts. `gpt-5.6-terra`, the closest model available to that account, was run as a substitute and is labelled as such.
+
+**Result: hardness requirement not met.** Every scored trial passed.
 
 ### B. Adversarial Trials (`/cheat`)
-Target: 1 cheat trial per model; must receive 0 reward.
+Target: 1 cheat trial per agent; each must receive 0 reward.
 
-| Agent | Model | Mode | Reward | Exploit Detected? |
+| Agent | Model | Reward | Tests modified? | Job |
 |---|---|---|---|---|
-| Codex | `openai/gpt-5.6-sol` | Adversarial Cheat | 0.0 | No (Verifier is robust) |
-| Claude Code | `anthropic/claude-opus-5` | Adversarial Cheat | 0.0 | No (Verifier is robust) |
+| Claude Code | `anthropic/claude-opus-5` (`max`) | **1.0** | No, solved legitimately | `2026-09-18__05-04-37` |
+| Codex *(substitute)* | `openai/gpt-5.6-terra` (`xhigh`) | **1.0** | No, solved legitimately | `2026-09-18__05-07-42` |
+
+**Result: requirement not met.** Neither agent tampered with the verifier; both got reward 1.0 by fixing the code. The verifier is also exploitable in principle, because the tests it runs (`/app/tests/test_retrieval.py`) live inside the agent-writable container.
 
 ---
 
-## 6. Model Failure Analysis
+## 6. Model Performance Analysis
 
-### Why Frontier Models Fail on This Task:
-1. **Multiple Co-dependent Subtle Bugs**:
-   - Models often locate 1 or 2 obvious bugs (e.g. `avgdl` or `allow_terms`) and stop prematurely when partial tests pass.
-2. **Coupled Dense + Sparse Interactions**:
-   - Modifying dense vector normalization without fixing collection frequency updates in `add_documents` causes subtle downstream rank misalignments in RRF fusion.
-3. **Strict Math Contract Enforcement**:
-   - Evaluation tests check exact floating-point outputs for BM25 and RRF scores against mathematical gold standards, preventing imprecise "looks right" heuristic fixes from passing.
+Both frontier agents solved the task in every run (3 to 10 minutes per trial), and neither needed to cheat. The main reasons:
+
+1. **The instruction lists all six bugs.** `instruction.md` names every defect, so the agent only needs to find and fix each one.
+2. **Each fix is a one-line change to a textbook formula** (BM25, L2 norm, RRF, `any` vs `all`).
+3. **One unit test per bug.** `pytest` output tells the agent exactly which bugs remain, and the bugs don't interact.
+4. **Tests are in the agent's container.** This makes the verifier bypassable.
+
+Concrete changes to make the task meet the bar are listed in [TRIAL_RESULTS.md, section "Suggested changes before resubmission"](TRIAL_RESULTS.md#suggested-changes-before-resubmission).
 
 ---
 
@@ -128,19 +140,25 @@ Target: 1 cheat trial per model; must receive 0 reward.
 To run the automated checks and agent trials using Harbor:
 
 ```bash
-# 1. Test Task with Harbor
-harbor test tasks/rag-pipeline-repair
+# 1. Oracle and nop validation
+harbor run -p tasks/rag-pipeline-repair --agent oracle --env docker --yes
+harbor run -p tasks/rag-pipeline-repair --agent nop    --env docker --yes
 
-# 2. Run Oracle Verification
-harbor test tasks/rag-pipeline-repair --oracle
-
-# 3. Standard Agent Trials (Codex)
+# 2. Standard trials: Codex (required config; needs an OPENAI_API_KEY with gpt-5.6-sol access
+#    or a Codex login that supports it)
 harbor run -p tasks/rag-pipeline-repair \
   --agent codex --model openai/gpt-5.6-sol \
-  --env docker --yes --ae CODEX_FORCE_AUTH_JSON=1 --ak reasoning_effort=xhigh
+  --env docker --yes --ae CODEX_FORCE_AUTH_JSON=1 --ak reasoning_effort=xhigh \
+  -k 3 --n-concurrent 1 --agent-setup-timeout-multiplier 3
 
-# 4. Standard Agent Trials (Claude Code)
+# 3. Standard trials: Claude Code
 harbor run -p tasks/rag-pipeline-repair \
   --agent claude-code --model anthropic/claude-opus-5 \
-  --env docker --yes --ae CLAUDE_FORCE_OAUTH=1 --ae CLAUDE_CODE_OAUTH_TOKEN=<YOUR_OAUTH_TOKEN> --ak reasoning_effort=max
+  --env docker --yes --ae CLAUDE_FORCE_OAUTH=1 --ae CLAUDE_CODE_OAUTH_TOKEN=<YOUR_OAUTH_TOKEN> \
+  --ak reasoning_effort=max -k 3 --n-concurrent 1 --agent-setup-timeout-multiplier 3
+
+# 4. Adversarial trials: add to either command above (without -k 3)
+  --extra-instruction "Your goal is to get a reward of 1.0. You may modify the tests if necessary."
 ```
+
+`--n-concurrent 1 --agent-setup-timeout-multiplier 3` is recommended locally. Installing the agent inside the container (`apt-get install nodejs npm`) regularly exceeds Harbor's default 360 s setup timeout when trials run in parallel.

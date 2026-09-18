@@ -1,0 +1,156 @@
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+[notice] A new release of pip is available: 24.0 -> 26.2.[REDACTED]
+[notice] To update, run: pip install --upgrade pip
+============================= test session starts ==============================
+platform linux -- Python 3.[REDACTED][REDACTED].[REDACTED]6, pytest-9.[REDACTED].[REDACTED], pluggy-[REDACTED].6.0 -- /usr/local/bin/python3.[REDACTED][REDACTED]
+cachedir: .pytest_cache
+rootdir: /app
+collecting ... collected 6 items
+
+tests/test_retrieval.py::test_avgdl_calculation FAILED                   [ [REDACTED]6%]
+tests/test_retrieval.py::test_bm25_scoring_formula FAILED                [ 33%]
+tests/test_retrieval.py::test_add_documents_updates_df_and_vocab FAILED  [ 50%]
+tests/test_retrieval.py::test_dense_vector_l2_normalization FAILED       [ 66%]
+tests/test_retrieval.py::test_rrf_rank_scoring FAILED                    [ 83%]
+tests/test_retrieval.py::test_allow_terms_filtering FAILED               [[REDACTED]00%]
+
+=================================== FAILURES ===================================
+____________________________ test_avgdl_calculation ____________________________
+
+    def test_avgdl_calculation():
+        """Bug [REDACTED] check: avgdl must equal sum(doc_lengths) / N."""
+        docs = [
+            "apple banana cherry",
+            "date elderberry fig grape",
+        ]
+        retriever = HybridRetriever()
+        retriever.build_index(docs)
+    
+        # doc[REDACTED] has 3 tokens, doc2 has 4 tokens -> total 7 tokens across 2 docs -> avgdl = 3.5
+>       assert retriever.avgdl == 3.5, f"Expected avgdl 3.5, got {retriever.avgdl}"
+E       AssertionError: Expected avgdl 3.5, got 2.3333333333333335
+E       assert 2.3333333333333335 == 3.5
+E        +  where 2.3333333333333335 = <retrieval.retrieval.HybridRetriever object at 0xffffad65b5[REDACTED]0>.avgdl
+
+tests/test_retrieval.py:20: AssertionError
+__________________________ test_bm25_scoring_formula ___________________________
+
+    def test_bm25_scoring_formula():
+        """Bug 2 check: BM25 score must use (k[REDACTED] + [REDACTED]) multiplier in TF numerator."""
+        retriever = HybridRetriever(k[REDACTED]=[REDACTED].5, b=0.75)
+        docs = [
+            "python machine learning data science",
+            "python python python code developer",
+        ]
+        retriever.build_index(docs)
+    
+        # doc[REDACTED] has 5 tokens, doc2 has 5 tokens -> avgdl = 5.0
+        # N=2, df=2 -> idf = ln((2-2+0.5)/(2+0.5) + [REDACTED].0) = ln(0.5/2.5 + [REDACTED].0) = ln([REDACTED].2)
+        idf = math.log([REDACTED].2)
+        tf = [REDACTED]
+        denom = tf + [REDACTED].5 * ([REDACTED].0 - 0.75 + 0.75 * (5.0 / 5.0))
+        expected_score = idf * (tf * 2.5) / denom
+    
+        actual_score = retriever._bm25_score(["python"], 0)
+>       assert math.isclose(actual_score, expected_score, rel_tol=[REDACTED]e-5), (
+            f"Expected BM25 score {expected_score}, got {actual_score}"
+        )
+E       AssertionError: Expected BM25 score 0.[REDACTED]8232[REDACTED]5567939546, got 0.0893003543480594
+E       assert False
+E        +  where False = <built-in function isclose>(0.0893003543480594, 0.[REDACTED]8232[REDACTED]5567939546, rel_tol=[REDACTED]e-05)
+E        +    where <built-in function isclose> = math.isclose
+
+tests/test_retrieval.py:40: AssertionError
+___________________ test_add_documents_updates_df_and_vocab ____________________
+
+    def test_add_documents_updates_df_and_vocab():
+        """Bug 3 check: add_documents must update doc_freqs, vocab, N, and dense vectors."""
+        retriever = HybridRetriever()
+        initial_docs = ["first document about alpha"]
+        retriever.build_index(initial_docs)
+    
+        assert "beta" not in retriever.vocab
+        assert retriever.doc_freqs.get("beta", 0) == 0
+    
+        new_docs = ["second document about beta and gamma"]
+        retriever.add_documents(new_docs)
+    
+        assert retriever.N == 2
+>       assert "beta" in retriever.vocab
+E       AssertionError: assert 'beta' in {'about', 'alpha', 'document', 'first'}
+E        +  where {'about', 'alpha', 'document', 'first'} = <retrieval.retrieval.HybridRetriever object at 0xffffad3563d0>.vocab
+
+tests/test_retrieval.py:58: AssertionError
+______________________ test_dense_vector_l2_normalization ______________________
+
+    def test_dense_vector_l2_normalization():
+        """Bug 4 check: Dense vector norm must use sum of squares v**2."""
+        retriever = HybridRetriever()
+        docs = ["quantum computing physics physics"]
+        retriever.build_index(docs)
+    
+        vec = retriever.doc_vectors[0]
+        # Sum of squares of L2-normalized vector must be [REDACTED].0
+        l2_sum = sum(v**2 for v in vec.values())
+>       assert math.isclose(l2_sum, [REDACTED].0, rel_tol=[REDACTED]e-5), f"L2 norm sum of squares was {l2_sum}, expected [REDACTED].0"
+E       AssertionError: L2 norm sum of squares was 0.379[REDACTED]0[REDACTED]049[REDACTED]8644[REDACTED][REDACTED]6, expected [REDACTED].0
+E       assert False
+E        +  where False = <built-in function isclose>(0.379[REDACTED]0[REDACTED]049[REDACTED]8644[REDACTED][REDACTED]6, [REDACTED].0, rel_tol=[REDACTED]e-05)
+E        +    where <built-in function isclose> = math.isclose
+
+tests/test_retrieval.py:76: AssertionError
+____________________________ test_rrf_rank_scoring _____________________________
+
+    def test_rrf_rank_scoring():
+        """Bug 5 check: RRF score must use [REDACTED]-indexed rank formula [REDACTED] / (rrf_k + rank)."""
+        retriever = HybridRetriever(rrf_k=60)
+        docs = [
+            "machine learning models",
+            "deep neural networks",
+        ]
+        retriever.build_index(docs)
+    
+        results = retriever.retrieve("learning", top_k=2)
+        # The top document (rank [REDACTED] in both BM25 and dense) should get rrf score 2 * ([REDACTED] / (60 + [REDACTED])) = 2/6[REDACTED]
+        expected_top_score = 2.0 / 6[REDACTED].0
+        top_doc, top_score = results[0]
+>       assert math.isclose(top_score, expected_top_score, rel_tol=[REDACTED]e-4), (
+            f"Expected top RRF score {expected_top_score}, got {top_score}"
+        )
+E       AssertionError: Expected top RRF score 0.03278688524590[REDACTED]64, got 0.03333333333333333
+E       assert False
+E        +  where False = <built-in function isclose>(0.03333333333333333, 0.03278688524590[REDACTED]64, rel_tol=0.000[REDACTED])
+E        +    where <built-in function isclose> = math.isclose
+
+tests/test_retrieval.py:92: AssertionError
+__________________________ test_allow_terms_filtering __________________________
+
+    def test_allow_terms_filtering():
+        """Bug 6 check: allow_terms filter must use OR logic (at least one term)."""
+        retriever = HybridRetriever()
+        docs = [
+            "apple pie recipe",
+            "banana bread recipe",
+            "cherry tart recipe",
+        ]
+        retriever.build_index(docs)
+    
+        # Searching with allow_terms=["apple", "banana"] should return docs 0 and [REDACTED], but filter out doc 2
+        results = retriever.retrieve("recipe", top_k=5, allow_terms=["apple", "banana"])
+        retrieved_texts = [doc for doc, _ in results]
+    
+>       assert len(results) == 2, f"Expected 2 eligible documents, got {len(results)}"
+E       AssertionError: Expected 2 eligible documents, got 0
+E       assert 0 == 2
+E        +  where 0 = len([])
+
+tests/test_retrieval.py:[REDACTED][REDACTED][REDACTED]: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_retrieval.py::test_avgdl_calculation - AssertionError: Expe...
+FAILED tests/test_retrieval.py::test_bm25_scoring_formula - AssertionError: E...
+FAILED tests/test_retrieval.py::test_add_documents_updates_df_and_vocab - Ass...
+FAILED tests/test_retrieval.py::test_dense_vector_l2_normalization - Assertio...
+FAILED tests/test_retrieval.py::test_rrf_rank_scoring - AssertionError: Expec...
+FAILED tests/test_retrieval.py::test_allow_terms_filtering - AssertionError: ...
+============================== 6 failed in 0.02s ===============================

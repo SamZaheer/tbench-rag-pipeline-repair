@@ -1,0 +1,49 @@
+{
+    "id": "c0c766e4-c968-49d0-9858-e356cfc77a12",
+    "started_at": "2026-09-18T04:31:18.509410",
+    "updated_at": "2026-09-18T04:37:25.206138",
+    "finished_at": "2026-09-18T04:37:25.206138",
+    "n_total_trials": 3,
+    "stats": {
+        "n_completed_trials": 3,
+        "n_errored_trials": 3,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "codex__gpt-5.6-sol__adhoc": {
+                "n_trials": 1,
+                "n_errors": 3,
+                "metrics": [
+                    {
+                        "mean": 0.0
+                    }
+                ],
+                "pass_at_k": {
+                    "2": 0.0
+                },
+                "reward_stats": {
+                    "reward": {
+                        "0.0": [
+                            "rag-pipeline-repair__86DSwTZ"
+                        ]
+                    }
+                },
+                "exception_stats": {
+                    "AgentSetupTimeoutError": [
+                        "rag-pipeline-repair__paVrUj6",
+                        "rag-pipeline-repair__guyYSRh"
+                    ],
+                    "NonZeroAgentExitCodeError": [
+                        "rag-pipeline-repair__86DSwTZ"
+                    ]
+                }
+            }
+        },
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null
+    }
+}

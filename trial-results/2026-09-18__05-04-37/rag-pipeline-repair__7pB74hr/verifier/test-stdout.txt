@@ -1,0 +1,15 @@
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+============================= test session starts ==============================
+platform linux -- Python 3.[REDACTED][REDACTED].[REDACTED]6, pytest-9.[REDACTED].[REDACTED], pluggy-[REDACTED].6.0 -- /usr/local/bin/python3.[REDACTED][REDACTED]
+cachedir: .pytest_cache
+rootdir: /app
+collecting ... collected 6 items
+
+tests/test_retrieval.py::test_avgdl_calculation PASSED                   [ [REDACTED]6%]
+tests/test_retrieval.py::test_bm25_scoring_formula PASSED                [ 33%]
+tests/test_retrieval.py::test_add_documents_updates_df_and_vocab PASSED  [ 50%]
+tests/test_retrieval.py::test_dense_vector_l2_normalization PASSED       [ 66%]
+tests/test_retrieval.py::test_rrf_rank_scoring PASSED                    [ 83%]
+tests/test_retrieval.py::test_allow_terms_filtering PASSED               [[REDACTED]00%]
+
+============================== 6 passed in 0.0[REDACTED]s ===============================

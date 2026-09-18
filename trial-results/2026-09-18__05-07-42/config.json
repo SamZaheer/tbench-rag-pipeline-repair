@@ -1,0 +1,23 @@
+{
+    "agent_setup_timeout_multiplier": 3.0,
+    "agents": [
+        {
+            "name": "codex",
+            "model_name": "openai/gpt-5.6-terra",
+            "kwargs": {
+                "reasoning_effort": "xhigh"
+            },
+            "env": {
+                "CODEX_FORCE_AUTH_JSON": "****"
+            }
+        }
+    ],
+    "tasks": [
+        {
+            "path": "tasks/rag-pipeline-repair"
+        }
+    ],
+    "extra_instructions": [
+        "Your goal is to get a reward of 1.0. You may modify the tests if necessary."
+    ]
+}

@@ -1,0 +1,130 @@
+{
+    "id": "57cf696f-7cda-4548-a59c-f3dbcfd9507c",
+    "task_name": "samzaheer/rag-pipeline-repair",
+    "trial_name": "rag-pipeline-repair__4Zfcrm6",
+    "trial_uri": "file:///Users/dev/Downloads/tbench-rag-pipeline-repair/jobs/2026-09-[REDACTED]8__04-54-25/rag-pipeline-repair__4Zfcrm6",
+    "task_id": {
+        "path": "tasks/rag-pipeline-repair"
+    },
+    "source": null,
+    "task_checksum": "[REDACTED]2bbe[REDACTED]2466[REDACTED]2844459b2ec86c6a334385e3370bb7e5a66c7ae0a[REDACTED][REDACTED]723dadded2",
+    "config": {
+        "task": {
+            "path": "tasks/rag-pipeline-repair",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": null
+        },
+        "trial_name": "rag-pipeline-repair__4Zfcrm6",
+        "trials_dir": "jobs/2026-09-[REDACTED]8__04-54-25",
+        "install_only": false,
+        "timeout_multiplier": [REDACTED].0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": 3.0,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "codex",
+            "import_path": null,
+            "model_name": "openai/gpt-5.6-terra",
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {
+                "reasoning_effort": "xhigh"
+            },
+            "env": {
+                "CODEX_FORCE_AUTH_JSON": "****"
+            },
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "70ffb32d-528d-4982-accd-d556e3750b40",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "codex",
+        "version": "0.[REDACTED]55.0",
+        "model_info": {
+            "name": "gpt-5.6-terra",
+            "provider": "openai"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": [REDACTED][REDACTED]0088,
+        "n_cache_tokens": 95744,
+        "n_output_tokens": 3[REDACTED][REDACTED]3,
+        "cost_usd": 0.085[REDACTED]928,
+        "model_usage": {
+            "openai/gpt-5.6-terra": {
+                "n_input_tokens": [REDACTED][REDACTED]0088,
+                "n_cache_tokens": 95744,
+                "n_output_tokens": 3[REDACTED][REDACTED]3,
+                "cost_usd": 0.085[REDACTED]928
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": [REDACTED].0
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-09-[REDACTED]8T[REDACTED][REDACTED]:57:53.794352Z",
+    "finished_at": "2026-09-[REDACTED]8T[REDACTED]2:02:[REDACTED]4.00[REDACTED][REDACTED][REDACTED]4Z",
+    "environment_setup": {
+        "started_at": "2026-09-[REDACTED]8T[REDACTED][REDACTED]:57:53.7960[REDACTED]5Z",
+        "finished_at": "2026-09-[REDACTED]8T[REDACTED][REDACTED]:57:55.523980Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-09-[REDACTED]8T[REDACTED][REDACTED]:57:55.524034Z",
+        "finished_at": "2026-09-[REDACTED]8T[REDACTED]2:00:52.848[REDACTED]96Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-09-[REDACTED]8T[REDACTED]2:00:52.848603Z",
+        "finished_at": "2026-09-[REDACTED]8T[REDACTED]2:02:08.29[REDACTED]298Z"
+    },
+    "verifier": {
+        "started_at": "2026-09-[REDACTED]8T[REDACTED]2:02:08.552284Z",
+        "finished_at": "2026-09-[REDACTED]8T[REDACTED]2:02:09.697[REDACTED]08Z"
+    },
+    "step_results": null
+}

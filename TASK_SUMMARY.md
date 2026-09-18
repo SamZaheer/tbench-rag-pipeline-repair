@@ -198,9 +198,11 @@ Assert: Must FAIL (Exit Code != 0)                                 ▼
 
 ## 4. Empirical Test Results
 
-We ran automated verification on the completed workspace:
+Run with Harbor 0.23.0 on 2026-09-18:
 
-| Mode | Target File | Test Result | Exit Code | Conclusion |
+| Mode | Command | Reward | Harbor job | Conclusion |
 |---|---|---|---|---|
-| **NOP Validation** | Initial `retrieval.py` | **6 / 6 Failed** | `1` | Task cannot be passed without fixing code (no false positives). |
-| **Oracle Validation** | Post `solve.sh` | **6 / 6 Passed** | `0` | All tests pass cleanly in 0.04 seconds. |
+| **NOP Validation** | `harbor run ... --agent nop` | **0.0** | `2026-09-18__04-21-30` | Task cannot be passed without fixing code (no false positives). |
+| **Oracle Validation** | `harbor run ... --agent oracle` | **1.0** | `2026-09-18__04-21-21` | `solve.sh` makes all 6 tests pass. |
+
+Agent trial results (`/run` and `/cheat`) are documented in [TRIAL_RESULTS.md](TRIAL_RESULTS.md).

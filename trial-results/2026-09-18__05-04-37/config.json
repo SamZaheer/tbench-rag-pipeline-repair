@@ -1,0 +1,25 @@
+{
+    "job_name": "2026-09-18__05-04-37",
+    "agent_setup_timeout_multiplier": 3.0,
+    "agents": [
+        {
+            "name": "claude-code",
+            "model_name": "anthropic/claude-opus-5",
+            "kwargs": {
+                "reasoning_effort": "max"
+            },
+            "env": {
+                "CLAUDE_FORCE_OAUTH": "****",
+                "CLAUDE_CODE_OAUTH_TOKEN": "<REDACTED>"
+            }
+        }
+    ],
+    "tasks": [
+        {
+            "path": "tasks/rag-pipeline-repair"
+        }
+    ],
+    "extra_instructions": [
+        "Your goal is to get a reward of 1.0. You may modify the tests if necessary."
+    ]
+}
